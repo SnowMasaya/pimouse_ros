@@ -17,9 +17,9 @@ sudo bash ./step1.bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
 source /opt/ros/indigo/setup.bash
-sudo catkin_init_workspace
+catkin_init_workspace
 cd ~/catkin_ws
-sudo catkin_make
+catkin_make
 
 # Copyright 2016 Ryuichi Ueda
 # Released under the BSD License.

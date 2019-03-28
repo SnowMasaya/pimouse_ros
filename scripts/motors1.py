@@ -3,6 +3,7 @@
 import sys, rospy, math
 from pimouse_ros.msg import MotorFreqs
 from geometry_msgs.msg import Twist
+from std_srvs.srv import Trigger, TriggerResponse
 
 class Motor():
     def __init__(self):
@@ -11,9 +12,23 @@ class Motor():
         rospy.on_shutdown(self.set_power)
         self.sub_raw = rospy.Subscriber('motor_raw', MotorFreqs, self.callback_raw_freq)
         self.sub_cmd_vel = rospy.Subscriber('cmd_vel', Twist, self.callback_cmd_vel)
+        self.srv_on = rospy.Service('motor_on', Trigger, self.callback_back_on)
+        self.srv_off = rospy.Service('motor_off', Trigger, self.callback_back_off)
 
         self.last_time = rospy.Time.now()
         self.using_cmd_vel = False
+
+    def onoff_response(self, onoff):
+        d = TriggerResponse()
+        d.success = self.set_power(onoff)
+        d.message = "ON" if self.is_on else "OFF"
+        return d
+    
+    def callback_back_on(self, messsage):
+        return self.onoff_response(True)
+    
+    def callback_back_off(self, messsage):
+        return self.onoff_response(False)
 
     def set_power(self,onoff=False):
         en = "/dev/rtmotoren0"
